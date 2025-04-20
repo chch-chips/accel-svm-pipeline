@@ -34,7 +34,7 @@ def augment_positive_samples(X, y, n_aug=5, noise_std=0.01):
 
 # 读取标注后的特征数据
 # df = pd.read_csv("feature_data_labeled_expanded_3194.csv")
-df = pd.read_csv("2025-04-09/feature_data_labeled_span_1608.csv")
+df = pd.read_csv("2025-04-09/feature_data_labeled_span_12_1608.csv")
 feature_cols = [
     "meanx", "meany", "meanz",
     "sdx",   "sdy",   "sdz",
@@ -45,13 +45,14 @@ X = df[feature_cols].values
 y = df["label"].values  # -1 表示坑洼, 1 表示正常
 
 # 对正样本扩增：例如每个正样本扩增5个样本，噪声标准差根据数据尺度调整
-X_aug, y_aug = augment_positive_samples(X, y, n_aug=5, noise_std=0.02)
+X_aug, y_aug = augment_positive_samples(X, y, n_aug=5, noise_std=0.01)
 print("扩增后数据量:", X_aug.shape[0])
 
 # 划分数据（这里你可以直接用全部数据训练）
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X_aug, y_aug, test_size=0.2, random_state=42)
 
 # 使用 LinearSVC 训练
+# clf = LinearSVC(C=1.0, max_iter=10000, random_state=42)
 clf = LinearSVC(C=1.0, max_iter=10000, random_state=42, class_weight='balanced')
 clf.fit(X_train, y_train)
 
